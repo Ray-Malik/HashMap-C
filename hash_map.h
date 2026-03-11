@@ -26,7 +26,7 @@ typedef struct Node {
 // The map itself. Holds an array of bucket pointers and
 // tracks how many buckets exist (capacity).
 //
-// buckets is a pointer to an array of Node pointers:
+// buckets is a pointer to the first slot of an array of Node pointers :
 //   buckets
 //     |
 //     v
