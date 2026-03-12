@@ -43,4 +43,16 @@ typedef struct {
     int capacity;
 } HashMap;
 
+
+
+
+unsigned int hash(const char *key, int capacity);
+
+HashMap *map_create();
+
+void map_set(HashMap *map, const char *key, void *value);
+
+void *map_get(HashMap *map, const char *key);
+
+
 #endif
