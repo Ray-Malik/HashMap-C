@@ -54,5 +54,10 @@ void map_set(HashMap *map, const char *key, void *value);
 
 void *map_get(HashMap *map, const char *key);
 
+void map_free(HashMap *map);
+
+void map_delete(HashMap *map, const char *key);
+
+
 
 #endif

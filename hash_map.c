@@ -45,8 +45,8 @@ void map_set(HashMap *map, const char *key, void *value) {
 
 }
 
-//search the value of a key in the hashmap. return a pointer to the value 
-//becasue we dont actually know the type of it, so return the generic pointer to it
+//input a key, return a pointer to the value 
+//since we dont actually know the type of the value we are returning, so return the generic pointer to it
 //and returning a poitner allows the caller to change the value if they want (more flexibility)
 void *map_get(HashMap *map, const char *key) {
     //get the index of the value
@@ -65,4 +65,77 @@ void *map_get(HashMap *map, const char *key) {
         }
     }
     return NULL;
+}
+
+//1. free each nodes key (becasue we used strdup and WE allocated memory for it. the caller allocated memory for the value 
+// so no need to free the value pointer.)
+//2. free each node itself
+//3. free the buckets pointer
+//4. free the hashmap pointer itself
+void map_free(HashMap *map) {
+    //iterate through the buckets array
+    for (int i = 0; i < map->capacity; i++) {
+        //save the node you are on right now
+        Node * current_node = map->buckets[i];
+        while (current_node) {
+            //save next node
+            Node * next_node = current_node->next;
+            //free current node and it's key
+            free(current_node->key);
+            free(current_node);
+            //now move to the next node
+            current_node = next_node;
+        }
+    }
+    //now free the buckets pointer
+    free(map->buckets);
+    //free the hashmap
+    free(map);
+}
+
+//remove the node with the given key
+void map_delete(HashMap * map, const char *key) {
+    //get the index of the value
+    unsigned int hash_value = hash(key, map->capacity);
+
+    //get the first node at that location
+    Node * current_node = map->buckets[hash_value];
+
+    //edge case: bucket is empty
+    if (current_node == NULL) return;
+
+    
+    //initialize a variable that stores the node that is before the current one
+    Node * before_node;
+
+
+    //edge case: the node you want to delete is the first node in the bucket
+    if (strcmp(current_node->key, key) == 0) {
+            map->buckets[hash_value] = current_node->next;
+            //free the memory
+            free(current_node->key);
+            free(current_node);
+            //end loop
+            return;
+    } 
+
+    //walk the linked list and check the value of each one
+    while (current_node) {
+        if (strcmp(current_node->key, key) == 0) {
+            before_node->next = current_node->next;
+            //free the memory
+            free(current_node->key);
+            free(current_node);
+            //stop the loop (the while loop could keep running on garbage memory even after freeing)
+            // free() only tells the heap allocator this block is available.
+            // the pointer still holds the same address and the data is still there
+            // until something else overwrites it. so we must return immediately
+            // to avoid accessing that now-invalid memory.
+            return;
+        } 
+        else {
+            before_node = current_node;
+            current_node = current_node->next;
+        }
+    }
 }
