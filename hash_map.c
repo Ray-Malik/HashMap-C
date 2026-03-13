@@ -3,7 +3,7 @@
 #include <string.h>
 
 
-
+//input the key, output the bucket in the map it belongs in
 unsigned int hash(const char *key, int capacity) {
     unsigned int h = 5381;
     while (*key) {
@@ -13,6 +13,7 @@ unsigned int hash(const char *key, int capacity) {
     return h % capacity;
 }
 
+//create the memory for the hashmap and return the pointer to it
 HashMap * map_create() {
     HashMap * map = calloc(1, sizeof(HashMap));
     map->buckets = calloc(8, sizeof(Node*));
@@ -21,6 +22,8 @@ HashMap * map_create() {
     return map;
 }
 
+
+//insert a Node into the map given it's key and value 
 void map_set(HashMap *map, const char *key, void *value) {
     //first get the hash value 
     unsigned int hash_value = hash(key, map->capacity);
@@ -36,7 +39,6 @@ void map_set(HashMap *map, const char *key, void *value) {
     //we cant do strdup() on the value parameter because we dont know what
     //type it is. it could be an int, char, or anything else.
     node->value = value;
-
     //place that node pointer into the bucket that it belongs in
     node->next = map->buckets[hash_value];
     map->buckets[hash_value] = node;
